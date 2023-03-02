@@ -14,9 +14,9 @@ module InputProc
   end
 end
 
+# custom file writing
 module FileProc
-
-  def write_to_file(hsh, file_name)
+  def write_to_json_file(hsh, file_name)
     prettified_json = JSON.pretty_generate(hsh)
     IO.write("#{file_name}.json", prettified_json)
     puts "Successfully written to ./#{file_name}.json"
@@ -29,22 +29,35 @@ class MetaData
   include FileProc
   attr_accessor :meta_data, :output_file_name
 
-  def initialize
-    @meta_data = { template_name: '', template_label: '' }
-    @output_file_name = ''
+  def initialize(hsh, file_name)
+    @meta_data = hsh
+    @output_file_name = file_name
   end
 
-  def start_app(file_name)
+  def start_app
     start_prompt
-    write_to_file(@meta_data, file_name)
+    write_to_json_file(@meta_data, @output_file_name)
   end
 
   private
 
   def start_prompt
-    @meta_data = user_inputs(@meta_data)
+    user_inputs(@meta_data)
   end
 end
 
-app = MetaData.new
-app.start_app('ama_data')
+details = {
+  template_label: '',
+  template_name: '',
+  figma_url: '',
+  document_height: '',
+  document_width: '',
+  folder_name: '',
+  sample_file_name: '',
+  sample_interface_name: ''
+}
+
+# instantiate a new Metadata class
+app = MetaData.new(details, 'stanley')
+# get inputs and write to json file
+app.start_app
